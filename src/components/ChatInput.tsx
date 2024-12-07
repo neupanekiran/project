@@ -25,7 +25,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
 
   return (
     <div className="flex-col-1 items-center">
-      <div className="flex gap-4 max-w-4xl mx-auto items-center">
+      <div className="flex gap-4 max-w-4xl mx-auto items-center mb-3">
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -40,7 +40,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
           disabled={disabled || !input.trim()}
           className="items-center ml-1 hover:scale-125 mt-1 hover:text-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
          >
-          <Send size={25} />
+          <Send size={30} />
         </button>
       </div>
     </div>
