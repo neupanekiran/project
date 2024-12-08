@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChatMessage } from "./components/ChatMessage";
+import { ChatAnimation, ChatMessage } from "./components/ChatMessage";
 import { ChatInput } from "./components/ChatInput";
 import { sendChatMessage } from "./services/chatService";
 import type { ChatState, Message } from "./types/chat";
@@ -34,7 +34,7 @@ function  App() {
 
       setChatState((prev) => ({
         ...prev,
-        messages: [...prev.messages, userMessage, assistantMessage],
+        messages: [...prev.messages,  assistantMessage],
         isLoading: false,
       }));
     } catch (error) {
@@ -83,7 +83,7 @@ function  App() {
 
           {chatState.isLoading && (
             <div className="p-4 text-center text-gray-500">
-              <div className="animate-pulse">Thinking...</div>
+            <ChatAnimation /> 
             </div>
           )}
 

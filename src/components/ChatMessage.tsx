@@ -32,3 +32,21 @@ export function ChatMessage({ message }: ChatMessageProps) {
   
   );
 }
+
+ export function ChatAnimation(){ 
+
+  return (
+    <>
+   <div className=' chat chat-start  bg-inherit flex flex-row items-center align-center rounded-full'> 
+    <div className='  bg-blue-400 text-white h-10 w-10 rounded-full items-center p-2 '> 
+      <Bot size={20} /> 
+      </div>
+    <div className='chat-bubble  border-r-2 bg-white '> 
+    <span className="loading loading-dots loading-md text-slate-300"></span>
+    </div> 
+    </div>
+    </>
+  );
+
+
+ } 
