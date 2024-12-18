@@ -2,7 +2,7 @@ import React from 'react'
 import Logo from "../assets/Logo.png";   
 const Navbar = () => {
   return (
-    <div className="navbar bg-danfe items-center flex-col align-middle px-3 py-4">
+    <div className="navbar bg-surfacea0 items-center flex-col align-middle px-3 py-4">
   <div className="navbar-start ">
   </div>
   <div className="navbar-left">
@@ -18,4 +18,4 @@ const Navbar = () => {
 </div>  )
 }
 
-export default Navbar
+export default Navbar;

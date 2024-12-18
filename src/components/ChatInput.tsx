@@ -24,7 +24,7 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
   };
 
   return (
-    <div className="flex-col-1 items-center">
+    <div className="flex-col-1 items-center ">
       <div className="flex gap-4 max-w-4xl mx-auto items-center mb-3">
         <textarea
           value={input}
@@ -33,12 +33,12 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
           placeholder="Type your message..."
           rows={1}
           disabled={disabled}
-          className="flex-1 resize-none rounded-full border border-gray-200 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-70 bg-white h-auto"
+          className="flex-1 resize-none rounded-full border border-gray-200 p-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 disabled:opacity-70 bg-surfacetonala0 h-auto text-green-500"
         />
         <button
           onClick={handleSubmit}
           disabled={disabled || !input.trim()}
-          className="items-center ml-1 hover:scale-125 mt-1 hover:text-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="items-center ml-1 hover:scale-125 mt-1 hover:text-primarya0 disabled:opacity-50 disabled:cursor-not-allowed"
          >
           <Send size={30} />
         </button>
