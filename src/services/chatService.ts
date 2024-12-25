@@ -8,6 +8,7 @@ function convertMessagesToChatGPTFormat(messages: Message[]) {
   }));
 }
 
+
 export async function sendChatMessage(messages: Message[]) {
   const url = API_CONFIG.apiUrl;
 

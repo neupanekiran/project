@@ -8,3 +8,9 @@ export interface ChatState {
   isLoading: boolean;
   error: string | null;
 }
+
+export interface MetaData {
+  imageUrl?: string;
+  title?: string;
+  description?: string;
+}

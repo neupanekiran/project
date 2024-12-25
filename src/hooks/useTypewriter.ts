@@ -11,25 +11,26 @@ export function useTypewriter({ content, enabled, speed = 20 }: UseTypewriterPro
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
-    if (enabled) {
-      setIsTyping(true);
-      let index = -1;
-      setDisplayedContent('');
-
-      const typingInterval = setInterval(() => {
-        if (index < content.length) {
-          setDisplayedContent((prev) => prev + content.charAt(index));
-          index++;
-        } else {
-          setIsTyping(false);
-          clearInterval(typingInterval);
-        }
-      }, speed);
-
-      return () => clearInterval(typingInterval);
-    } else {
+    if (!enabled) {
       setDisplayedContent(content);
+      return;
     }
+
+    setIsTyping(true);
+    setDisplayedContent('');
+    let index = -1;
+
+    const typingInterval = setInterval(() => {
+      if (index < content.length) {
+        setDisplayedContent((prev) => prev + content.charAt(index));
+        index++;
+      } else {
+        setIsTyping(false);
+        clearInterval(typingInterval);
+      }
+    }, speed);
+
+    return () => clearInterval(typingInterval);
   }, [content, enabled, speed]);
 
   return { displayedContent, isTyping };

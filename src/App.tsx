@@ -7,6 +7,7 @@ import Logo from "./assets/Logo.png";
 import Navbar from "./components/Navbar";
 import Typewriter from "typewriter-effect";
 import { ChatAnimation } from "./components/ChatAnimation";
+
 function App() {
   const [chatState, setChatState] = useState<ChatState>({
     messages: [],
