@@ -54,7 +54,7 @@ export function ProductCard({ url, price }: ProductCardProps) {
         </div>
 
         {/* Product Details */}
-        <div className="flex flex-col justify-between flex-1">
+        <div className="flex flex-col justify-between flex-1 ">
           <div>
             <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">
               {metadata.title || 'View Product Details'}
