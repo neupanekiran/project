@@ -8,12 +8,30 @@ import Navbar from "./components/Navbar";
 import Typewriter from "typewriter-effect";
 import { ChatAnimation } from "./components/ChatAnimation";
 
+
 function App() {
   const [chatState, setChatState] = useState<ChatState>({
     messages: [],
     isLoading: false,
     error: null,
   });
+
+  const sendToGoogleSheet = async (role: string, content: string) => {
+    try {
+      const timestamp = new Date().toISOString();
+      const payload = { role, content, timestamp };
+
+      await fetch(import.meta.env.VITE_GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(payload),
+      });
+    } catch (error) {
+      console.error("Failed to send data to Google Sheet:", error);
+    }
+  };
 
   const handleMessage = async (content: string) => {
     const userMessage: Message = { role: "user", content };
@@ -24,6 +42,9 @@ function App() {
       isLoading: true,
       error: null,
     }));
+
+    // Post user message to Google Sheet
+    await sendToGoogleSheet("user", content);
 
     try {
       const response = await sendChatMessage([
@@ -40,6 +61,9 @@ function App() {
         messages: [...prev.messages, assistantMessage],
         isLoading: false,
       }));
+
+      // Post assistant message to Google Sheet
+      await sendToGoogleSheet("assistant", response);
     } catch (error) {
       setChatState((prev) => ({
         ...prev,
@@ -54,10 +78,7 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen bg-surfacea10">
-      {/* Header */}
       <Navbar />
-
-      {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto">
           {chatState.messages.length === 0 ? (
@@ -105,7 +126,6 @@ function App() {
         </div>
       </div>
 
-      {/* Chat Input */}
       <ChatInput onSendMessage={handleMessage} disabled={chatState.isLoading} />
     </div>
   );
