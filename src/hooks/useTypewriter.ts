@@ -6,7 +6,7 @@ interface UseTypewriterProps {
   speed?: number;
 }
 
-export function useTypewriter({ content, enabled, speed = 20 }: UseTypewriterProps) {
+export function useTypewriter({ content, enabled, speed = 30 }: UseTypewriterProps) {
   const [displayedContent, setDisplayedContent] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
