@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatMessage } from "./components/ChatMessage";
 import { ChatInput } from "./components/ChatInput";
 import { sendChatMessage } from "./services/chatService";
@@ -7,7 +7,8 @@ import Logo from "./assets/Logo.png";
 import Navbar from "./components/Navbar";
 import Typewriter from "typewriter-effect";
 import { ChatAnimation } from "./components/ChatAnimation";
-
+import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { db } from "./firebase/config";
 
 function App() {
   const [chatState, setChatState] = useState<ChatState>({
@@ -15,23 +16,6 @@ function App() {
     isLoading: false,
     error: null,
   });
-
-  const sendToGoogleSheet = async (role: string, content: string) => {
-    try {
-      const timestamp = new Date().toISOString();
-      const payload = { role, content, timestamp };
-
-      await fetch(import.meta.env.VITE_GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams(payload),
-      });
-    } catch (error) {
-      console.error("Failed to send data to Google Sheet:", error);
-    }
-  };
 
   const handleMessage = async (content: string) => {
     const userMessage: Message = { role: "user", content };
@@ -43,10 +27,8 @@ function App() {
       error: null,
     }));
 
-    // Post user message to Google Sheet
-    await sendToGoogleSheet("user", content);
-
     try {
+      // Send user message to backend service and get assistant response
       const response = await sendChatMessage([
         ...chatState.messages,
         userMessage,
@@ -56,14 +38,19 @@ function App() {
         content: response,
       };
 
+      // Update state with bot reply
       setChatState((prev) => ({
         ...prev,
         messages: [...prev.messages, assistantMessage],
         isLoading: false,
       }));
 
-      // Post assistant message to Google Sheet
-      await sendToGoogleSheet("assistant", response);
+      // Push both user and bot messages to Firestore
+      await addDoc(collection(db, "messages"), {
+        user: content, // User's message
+        bot: response, // Bot's reply
+        timestamp: Timestamp.now(), // Timestamp of the reply
+      });
     } catch (error) {
       setChatState((prev) => ({
         ...prev,
@@ -78,7 +65,10 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen bg-surfacea10">
+      {/* Header */}
       <Navbar />
+
+      {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto">
           {chatState.messages.length === 0 ? (
@@ -126,6 +116,7 @@ function App() {
         </div>
       </div>
 
+      {/* Chat Input */}
       <ChatInput onSendMessage={handleMessage} disabled={chatState.isLoading} />
     </div>
   );
