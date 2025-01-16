@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { ChatMessage } from "./components/ChatMessage";
 import { ChatInput } from "./components/ChatInput";
 import { sendChatMessage } from "./services/chatService";
@@ -9,15 +9,43 @@ import Typewriter from "typewriter-effect";
 import { ChatAnimation } from "./components/ChatAnimation";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "./firebase/config";
+import Carousel from "./components/Carousel";
 
 function App() {
+  const [showChat, setShowChat] = useState(false);
   const [chatState, setChatState] = useState<ChatState>({
     messages: [],
     isLoading: false,
     error: null,
   });
 
+  const [inputDisabled, setInputDisabled] = useState(false);
+
+  // Initialize or retrieve the session message count
+  useEffect(() => {
+    if (!sessionStorage.getItem("messageCount")) {
+      sessionStorage.setItem("messageCount", "0");
+    }
+  }, []);
+
   const handleMessage = async (content: string) => {
+    const messageCount = parseInt(sessionStorage.getItem("messageCount") || "0", 10);
+
+    if (messageCount >= 15) {
+      console.log("Session Ended");
+      setInputDisabled(true);
+      setShowChat(false); // Return to carousel view
+
+      // Disable input for 1 minute
+      setTimeout(() => {
+        sessionStorage.setItem("messageCount", "0"); // Reset session count
+        setInputDisabled(false);
+        console.log("Session Reset: You can chat now.");
+      }, 60000);
+
+      return;
+    }
+
     const userMessage: Message = { role: "user", content };
 
     setChatState((prev) => ({
@@ -28,7 +56,6 @@ function App() {
     }));
 
     try {
-      // Send user message to backend service and get assistant response
       const response = await sendChatMessage([
         ...chatState.messages,
         userMessage,
@@ -38,19 +65,19 @@ function App() {
         content: response,
       };
 
-      // Update state with bot reply
       setChatState((prev) => ({
         ...prev,
         messages: [...prev.messages, assistantMessage],
         isLoading: false,
       }));
 
-      // Push both user and bot messages to Firestore
       await addDoc(collection(db, "messages"), {
-        user: content, // User's message
-        bot: response, // Bot's reply
-        timestamp: Timestamp.now(), // Timestamp of the reply
+        user: content,
+        bot: response,
+        timestamp: Timestamp.now(),
       });
+
+      sessionStorage.setItem("messageCount", (messageCount + 1).toString());
     } catch (error) {
       setChatState((prev) => ({
         ...prev,
@@ -63,16 +90,18 @@ function App() {
     }
   };
 
+  if (!showChat) {
+    return <Carousel onChatClick={() => setShowChat(true)} />;
+  }
+
   return (
     <div className="flex flex-col h-screen bg-surfacea10">
-      {/* Header */}
       <Navbar />
 
-      {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto">
           {chatState.messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center p-8 animate-pulse ">
+            <div className="flex flex-col items-center justify-center h-full text-center p-8 animate-pulse">
               <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 flex items-center justify-center mb-4">
                 <img
                   src={Logo}
@@ -116,8 +145,10 @@ function App() {
         </div>
       </div>
 
-      {/* Chat Input */}
-      <ChatInput onSendMessage={handleMessage} disabled={chatState.isLoading} />
+      <ChatInput
+        onSendMessage={handleMessage}
+        disabled={chatState.isLoading || inputDisabled}
+      />
     </div>
   );
 }

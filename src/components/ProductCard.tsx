@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react';
+// import { ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
 import { fetchMetaData } from '../utils/metaFetcher';
@@ -76,8 +76,8 @@ export function ProductCard({ url, price }: ProductCardProps) {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
           >
-            View Product
-            <ArrowRight size={16} />
+            {/* View Product */}
+            {/* ArrowRight size={16}  */}
           </a>
         </div>
       </div>

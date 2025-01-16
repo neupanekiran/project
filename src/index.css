@@ -21,4 +21,28 @@
   border-radius: 0.25rem;
   font-size: 0.875em;
 }
- 
+
+@keyframes showContent {
+  from {
+    transform: translateY(20px);
+    filter: blur(5px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+@layer utilities {
+  .aspect-square {
+    aspect-ratio: 1 / 1;
+  }
+}

@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react';
+// import { ArrowRight } from 'lucide-react';
 
 interface ProductDetailsProps {
   title: string;
@@ -23,8 +23,8 @@ export function ProductDetails({ title, description, url }: ProductDetailsProps)
         rel="noopener noreferrer"
         className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
       >
-        View Product
-        <ArrowRight size={16} />
+      {/* View Product */}
+            {/* ArrowRight size={16}  */}
       </a>
     </div>
   );

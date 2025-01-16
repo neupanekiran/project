@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react';
+// import { ArrowRight } from 'lucide-react';
 import type { MetaData } from '../types/chat';
 
 interface ProductPreviewProps {
@@ -34,8 +34,8 @@ export function ProductPreview({ url, metadata, price }: ProductPreviewProps) {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
         >
-          View Product
-          <ArrowRight size={16} />
+          {/* View Product */}
+            {/* ArrowRight size={16}  */}
         </a>
       </div>
     </div>

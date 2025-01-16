@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
+ // import { ArrowRight } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import type { MetaData } from '../../types/metadata';
 import { fetchMetaData } from '../../utils/metaFetcher';
@@ -68,7 +68,7 @@ export function ProductCard({ url, price }: ProductCardProps) {
           <div className="flex items-center gap-4">
             <QRCode
               value={url}
-              size={80}
+              size={70}
               className="bg-white p-2 rounded-lg shadow-sm"
             />
             <a
@@ -77,8 +77,8 @@ export function ProductCard({ url, price }: ProductCardProps) {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
             >
-              View Product
-              <ArrowRight size={16} />
+           {/* View Product */}
+            {/* ArrowRight size={16}  */}
             </a>
           </div>
         </div>
