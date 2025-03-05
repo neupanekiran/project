@@ -1,12 +1,8 @@
+// Frontend code where I fetch the data from the firebase  which path is ../firebase/config. form the db  named sliderItems and the shcema as it like below as shown in image
 import React, { useState, useEffect, useCallback } from 'react';
 import {  MessageSquare } from 'lucide-react';
-import tea1 from "../assets/1_tea.jpg";
-import tea2 from "../assets/2_tea.jpg";
-import tea5 from "../assets/5_tea.jpg";
-import tea8 from "../assets/08_tea.jpg";
-import tea9 from "../assets/9_tea.jpg";
-import tea19 from "../assets/19_tea.jpg";
-import tea33 from "../assets/33_tea.jpg";
+import { db } from '../firebase/config'; // Import db from your firebase config
+import { collection, getDocs } from 'firebase/firestore'; // Import Firestore functions
 
 interface CarouselProps {
   onChatClick: () => void;
@@ -17,65 +13,43 @@ interface TeaItem {
   title: string;
   topic: string;
   description: string;
-  image: string;
+  imageUrl: string; // Changed 'image' to 'imageUrl' to match Firestore field
 }
 
-const teaItems: TeaItem[] = [
-  {
-    id: '01',
-    title: "1° Ilam Loose Leaf Black Tea",
-    topic: "Loose Leaf Black Tea",
-    description: "Sourced from Nepal's pristine Ilam region, this high-altitude tea delivers a smooth, aromatic flavor with a light-to-medium body. Ideal for plain sipping, chai, or iced tea, it's a versatile choice for any tea enthusiast.",
-    image: tea1,
-  },
-  {
-    id: '02',
-    title: "2° Yak Mountain Loose Leaf Chai Tea",
-    topic: "Black Tea Spice Blend",
-    description: "A delicate and refreshing green tea sourced from the lush hills of Nepal. This tea features a smooth, grassy flavor profile with subtle floral notes, perfect for a calming sip. Grown at high altitudes, it offers a rich dose of antioxidants and catechins, supporting overall health and wellness.",
-    image: tea2,
-  },
-  {
-    id: '03',
-    title: "5° Tulsi Tea (Sacred Basil Tea)",
-    topic: "Tisane",
-    description: "A soothing herbal blend inspired by Ayurveda, combining the earthy, aromatic notes of tulsi (sacred basil) with a hint of spice. Known for its calming properties.",
-    image: tea5,
-  },
-  {
-    id: '04',
-    title: "08° Rose Black Tea",
-    topic: "Black Tea Blend",
-    description: "A delightful blend of premium black tea and fragrant Himalayan rose petals, offering a harmonious balance of bold and floral flavors. Perfect for a calming, aromatic experience.",
-    image: tea8,
-  },
-  {
-    id: '05',
-    title: "09° Signature Golden Tips Tea",
-    topic: "Black Tea",
-    description: "A luxurious white tea handpicked from the high-altitude Himalayan gardens of Nepal. With its delicate, floral aroma and a smooth, velvety finish.",
-    image: tea9,
-  },
-  {
-    id: '06',
-    title: "19° Himalayan Green Tea",
-    topic: "White Tea",
-    description: "A bold and invigorating black tea blend infused with traditional Himalayan spices like cardamom, cinnamon, and cloves. Perfect for crafting a rich, spiced chai latte or enjoying on its own. This tea offers a warm, aromatic experience, perfect for cozy moments or a pick-me-up.",
-    image: tea19,
-  },
-  {
-    id: '07',
-    title: "33° Silver Needle Tea",
-    topic: "Gold",
-    description: "A rare and exquisite white tea crafted from the youngest buds of high-altitude tea gardens in Nepal. This tea features a delicate, sweet flavor with subtle floral and fruity notes, offering a luxurious and refreshing experience. Packed with antioxidants, it’s a healthful indulgence for any tea lover.",
-    image: tea33,
-  }
-];
+// Removed demo data imports and teaItems array
 
 const Carousel: React.FC<CarouselProps> = ({ onChatClick }) => {
-  const [items, setItems] = useState(teaItems);
+  const [items, setItems] = useState<TeaItem[]>([]); // Initialize items as empty array of TeaItem
   const [showDetail, setShowDetail] = useState(false);
   const [direction, setDirection] = useState<'next' | 'prev' | null>(null);
+  const [loading, setLoading] = useState(true); // Add loading state
+
+  const fetchSliderItems = useCallback(async () => {
+    setLoading(true); // Set loading to true when fetching starts
+    try {
+      const querySnapshot = await getDocs(collection(db, "sliderItems"));
+      const sliderItemsData: TeaItem[] = querySnapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          title: data.title || '', // Ensure fallback in case data is missing
+          topic: data.topic || '',
+          description: data.description || '',
+          imageUrl: data.imageUrl || '',
+        };
+      });
+      setItems(sliderItemsData);
+    } catch (error) {
+      console.error("Error fetching slider items from Firebase:", error);
+      // Handle error appropriately, maybe set an error state to display a message to the user
+    } finally {
+      setLoading(false); // Set loading to false when fetching is complete
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSliderItems(); // Fetch slider items when component mounts
+  }, [fetchSliderItems]);
 
   const rotateItems = useCallback((type: 'next' | 'prev') => {
     setDirection(type);
@@ -95,13 +69,22 @@ const Carousel: React.FC<CarouselProps> = ({ onChatClick }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!showDetail) {
+      if (!showDetail && !loading && items.length > 0) { // Check for loading and items before rotating
         rotateItems('next');
       }
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [rotateItems, showDetail]);
+  }, [rotateItems, showDetail, loading, items.length]); // Include loading and items.length in dependency array
+
+  if (loading) {
+    return <div className="relative min-h-screen md:h-[800px] overflow-hidden bg-gradient-to-b from-[#F4F4F4] to-white flex justify-center items-center">Loading slides...</div>; // Or a more sophisticated loading indicator
+  }
+
+  if (items.length === 0) {
+    return <div className="relative min-h-screen md:h-[800px] overflow-hidden bg-gradient-to-b from-[#F4F4F4] to-white flex justify-center items-center">No slides available.</div>; // Message when no slides are found
+  }
+
 
   return (
     <div className="relative min-h-screen md:h-[800px] overflow-hidden bg-gradient-to-b from-[#F4F4F4] to-white">
@@ -133,7 +116,7 @@ const Carousel: React.FC<CarouselProps> = ({ onChatClick }) => {
               </div>
               <div className="w-full md:w-1/2 relative aspect-square md:aspect-auto">
                 <img
-                  src={item.image}
+                  src={item.imageUrl} // Use imageUrl from fetched data
                   alt={item.title}
                   className="w-full h-full object-cover rounded-2xl shadow-2xl transition-all duration-1000"
                 />
@@ -142,15 +125,15 @@ const Carousel: React.FC<CarouselProps> = ({ onChatClick }) => {
             </div>
           </div>
         ))}
-     
-     
+
+
       </div>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 ">
-      <button 
+      <button
   onClick={onChatClick}
-  className="inline-flex items-center gap-2 px-8 py-4 bg-black text-white rounded-full 
-             hover:bg-gray-800 transition-all duration-300 hover:scale-105 shadow-lg 
+  className="inline-flex items-center gap-2 px-8 py-4 bg-black text-white rounded-full
+             hover:bg-gray-800 transition-all duration-300 hover:scale-105 shadow-lg
              hover:ring-4 hover:ring-yellow-200 hover:ring-opacity-90 hover:text-yellow-300"
 >
           <MessageSquare className="w-5 h-5" />

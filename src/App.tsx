@@ -18,6 +18,24 @@ function App() {
     isLoading: false,
     error: null,
   });
+  let inactivityTimer: NodeJS.Timeout;
+  useEffect(() => {
+    const events = ["mousemove", "keydown", "touchstart"];
+    events.forEach((event) => document.addEventListener(event, resetInactivityTimer));
+
+    return () => {
+      events.forEach((event) => document.removeEventListener(event, resetInactivityTimer));
+      clearTimeout(inactivityTimer);
+    };
+  }, [showChat]);
+  const resetInactivityTimer = () => {
+    clearTimeout(inactivityTimer);
+    if (showChat) {
+      inactivityTimer = setTimeout(() => {
+        setShowChat(false);
+      }, 30000); // 30 seconds
+    }
+  };
 
   const [inputDisabled, setInputDisabled] = useState(false);
 
@@ -55,11 +73,18 @@ function App() {
       error: null,
     }));
 
+    // **Session Storage Logic for last 3 messages:**
+    const previousMessagesJSON = sessionStorage.getItem('last3Messages') || '[]';
+    const previousMessages: Message[] = JSON.parse(previousMessagesJSON);
+    const currentMessagesToSend: Message[] = [...previousMessages, userMessage];
+    const messagesToStore = currentMessagesToSend.slice(-3); // Keep only last 3
+    sessionStorage.setItem('last3Messages', JSON.stringify(messagesToStore));
+
+
     try {
-      const response = await sendChatMessage([
-        ...chatState.messages,
-        userMessage,
-      ]);
+      // **Send only the last 3 messages (or fewer if less than 3 in session)**
+      const response = await sendChatMessage(messagesToStore);
+
       const assistantMessage: Message = {
         role: "assistant",
         content: response,
@@ -71,6 +96,7 @@ function App() {
         isLoading: false,
       }));
 
+      // **Database Upload - Keep uploading individual messages (user and bot)**
       await addDoc(collection(db, "messages"), {
         user: content,
         bot: response,
