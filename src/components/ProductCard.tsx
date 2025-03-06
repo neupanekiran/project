@@ -1,4 +1,4 @@
-// import { ArrowRight } from 'lucide-react';
+
 import { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
 import { fetchMetaData } from '../utils/metaFetcher';

@@ -9,10 +9,11 @@ import Typewriter from "typewriter-effect";
 import { ChatAnimation } from "./components/ChatAnimation";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "./firebase/config";
-import Carousel from "./components/Carousel";
+import Carousel from "./components/Carousel";  
 
 function App() {
   const [showChat, setShowChat] = useState(false);
+  
   const [chatState, setChatState] = useState<ChatState>({
     messages: [],
     isLoading: false,
