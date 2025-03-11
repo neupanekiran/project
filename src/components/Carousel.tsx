@@ -137,7 +137,7 @@ const Carousel: React.FC<CarouselProps> = ({ onChatClick }) => {
              hover:ring-4 hover:ring-yellow-200 hover:ring-opacity-90 hover:text-yellow-300"
 >
           <MessageSquare className="w-5 h-5" />
-          Chat with Bot
+          Chat Now
         </button>
       </div>
     </div>

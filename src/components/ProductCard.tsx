@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
 import { fetchMetaData } from '../utils/metaFetcher';
 import type { MetaData } from '../types/chat';
+// import { ArrowRight } from 'lucide-react'; // If you want to use the icon
 
 interface ProductCardProps {
   url: string;
@@ -33,11 +33,11 @@ export function ProductCard({ url, price }: ProductCardProps) {
   }
 
   return (
-    <div className="my-4">
-      <div className="flex gap-4 p-4 bg-white rounded-lg shadow-md">
+    <div className="my-4 w-full"> {/* Added w-full to make card container full width */}
+      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-lg shadow-md"> {/* flex-col on small, flex-row on sm and up */}
         {/* Product Image */}
         {metadata?.imageUrl && (
-          <div className="relative w-48 h-48 flex-shrink-0">
+          <div className="relative w-full sm:w-48 h-48 flex-shrink-0"> {/* w-full on small, w-48 on sm and up */}
             <img
               src={metadata.imageUrl}
               alt={metadata.title || 'Product image'}
@@ -52,10 +52,10 @@ export function ProductCard({ url, price }: ProductCardProps) {
         )}
 
         {/* QR Code */}
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 mt-4 sm:mt-0"> {/* Added mt-4 on small screens to place QR code below image */}
           <QRCode
             value={url}
-            size={120}
+            size={100} // Reduced QR code size for better mobile fit
             className="bg-white p-2 rounded-lg shadow-sm"
           />
         </div>
@@ -77,7 +77,7 @@ export function ProductCard({ url, price }: ProductCardProps) {
             className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
           >
             {/* View Product */}
-            {/* ArrowRight size={16}  */}
+            {/* <ArrowRight size={16} /> */} {/* Uncomment if you want to use the icon */}
           </a>
         </div>
       </div>
