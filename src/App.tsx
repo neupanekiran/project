@@ -34,7 +34,7 @@ function App() {
     if (showChat) {
       inactivityTimer = setTimeout(() => {
         setShowChat(false);
-      }, 30000); // 30 seconds
+      }, 120000); // 30 seconds
     }
   };
 
@@ -50,7 +50,7 @@ function App() {
   const handleMessage = async (content: string) => {
     const messageCount = parseInt(sessionStorage.getItem("messageCount") || "0", 10);
 
-    if (messageCount >= 15) {
+    if (messageCount >= 20) {
       console.log("Session Ended");
       setInputDisabled(true);
       setShowChat(false); // Return to carousel view
