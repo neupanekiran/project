@@ -42,7 +42,11 @@ ${additionalInfoData}
 - Include product name, price, and QR code links.
 - Clarify tea numbers like 05° or 47° as the same product with different marketing names.
 - Include more information about the product i.e Product Description Details
-Stay professional, engaging, and responsive.`;
+Stay professional, engaging, and responsive.
+Note : Don't provide Prices of the Products in the response, just provide the product name and description  with link and their benefits
+if the user asks for prices, you can say "Please visit our website for the latest prices and offers."
+`;
+
 
   } catch (error) {
     console.error("Error fetching prompt data:", error);

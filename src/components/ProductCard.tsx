@@ -45,7 +45,7 @@ export function ProductCard({ url, price }: ProductCardProps) {
             />
             {price && (
               <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
-                <span className="font-semibold text-gray-900">{price}</span>
+                {/* <span className="font-semibold text-gray-900">{price}</span> */}
               </div>
             )}
           </div>

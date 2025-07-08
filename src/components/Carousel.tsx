@@ -1,6 +1,5 @@
-// Frontend code where I fetch the data from the firebase  which path is ../firebase/config. form the db  named sliderItems and the shcema as it like below as shown in image
 import React, { useState, useEffect, useCallback } from 'react';
-import {  MessageSquare } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { db } from '../firebase/config'; // Import db from your firebase config
 import { collection, getDocs } from 'firebase/firestore'; // Import Firestore functions
 
@@ -13,26 +12,26 @@ interface TeaItem {
   title: string;
   topic: string;
   description: string;
-  imageUrl: string; // Changed 'image' to 'imageUrl' to match Firestore field
+  imageUrl: string;
 }
 
-// Removed demo data imports and teaItems array
-
 const Carousel: React.FC<CarouselProps> = ({ onChatClick }) => {
-  const [items, setItems] = useState<TeaItem[]>([]); // Initialize items as empty array of TeaItem
-  const [showDetail, setShowDetail] = useState(false);
-  const [direction, setDirection] = useState<'next' | 'prev' | null>(null);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [items, setItems] = useState<TeaItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // --- FIX 2: Removed unused 'showDetail' and 'direction' states ---
+  // const [showDetail, setShowDetail] = useState(false);
+  // const [direction, setDirection] = useState<'next' | 'prev' | null>(null);
 
   const fetchSliderItems = useCallback(async () => {
-    setLoading(true); // Set loading to true when fetching starts
+    setLoading(true);
     try {
       const querySnapshot = await getDocs(collection(db, "sliderItems"));
       const sliderItemsData: TeaItem[] = querySnapshot.docs.map((docSnap) => {
         const data = docSnap.data();
         return {
           id: docSnap.id,
-          title: data.title || '', // Ensure fallback in case data is missing
+          title: data.title || '',
           topic: data.topic || '',
           description: data.description || '',
           imageUrl: data.imageUrl || '',
@@ -41,20 +40,21 @@ const Carousel: React.FC<CarouselProps> = ({ onChatClick }) => {
       setItems(sliderItemsData);
     } catch (error) {
       console.error("Error fetching slider items from Firebase:", error);
-      // Handle error appropriately, maybe set an error state to display a message to the user
     } finally {
-      setLoading(false); // Set loading to false when fetching is complete
+      setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchSliderItems(); // Fetch slider items when component mounts
+    fetchSliderItems();
   }, [fetchSliderItems]);
 
+  // --- FIX 2: Simplified 'rotateItems' by removing 'setDirection' calls ---
   const rotateItems = useCallback((type: 'next' | 'prev') => {
-    setDirection(type);
+    // The timeout handles the delay for the animation effect
     setTimeout(() => {
       setItems(prevItems => {
+        if (prevItems.length < 2) return prevItems; // Prevent rotation if not enough items
         if (type === 'next') {
           const [first, ...rest] = prevItems;
           return [...rest, first];
@@ -63,28 +63,29 @@ const Carousel: React.FC<CarouselProps> = ({ onChatClick }) => {
           return [last, ...prevItems.slice(0, -1)];
         }
       });
-      setDirection(null);
-    }, 500);
+    }, 500); // This timeout should match the transition duration
   }, []);
 
+  // --- FIX 2: Simplified useEffect dependencies and logic ---
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!showDetail && !loading && items.length > 0) { // Check for loading and items before rotating
+      // The condition no longer needs to check for 'showDetail'
+      if (!loading && items.length > 0) {
         rotateItems('next');
       }
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [rotateItems, showDetail, loading, items.length]); // Include loading and items.length in dependency array
+    // Dependencies updated
+  }, [rotateItems, loading, items.length]);
 
   if (loading) {
-    return <div className="relative min-h-screen md:h-[800px] overflow-hidden bg-gradient-to-b from-[#F4F4F4] to-white flex justify-center items-center">Loading slides...</div>; // Or a more sophisticated loading indicator
+    return <div className="relative min-h-screen md:h-[800px] overflow-hidden bg-gradient-to-b from-[#F4F4F4] to-white flex justify-center items-center">Loading slides...</div>;
   }
 
   if (items.length === 0) {
-    return <div className="relative min-h-screen md:h-[800px] overflow-hidden bg-gradient-to-b from-[#F4F4F4] to-white flex justify-center items-center">No slides available.</div>; // Message when no slides are found
+    return <div className="relative min-h-screen md:h-[800px] overflow-hidden bg-gradient-to-b from-[#F4F4F4] to-white flex justify-center items-center">No slides available.</div>;
   }
-
 
   return (
     <div className="relative min-h-screen md:h-[800px] overflow-hidden bg-gradient-to-b from-[#F4F4F4] to-white">
@@ -116,7 +117,7 @@ const Carousel: React.FC<CarouselProps> = ({ onChatClick }) => {
               </div>
               <div className="w-full md:w-1/2 relative aspect-square md:aspect-auto">
                 <img
-                  src={item.imageUrl} // Use imageUrl from fetched data
+                  src={item.imageUrl}
                   alt={item.title}
                   className="w-full h-full object-cover rounded-2xl shadow-2xl transition-all duration-1000"
                 />
@@ -125,17 +126,15 @@ const Carousel: React.FC<CarouselProps> = ({ onChatClick }) => {
             </div>
           </div>
         ))}
-
-
       </div>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 ">
       <button
-  onClick={onChatClick}
-  className="inline-flex items-center gap-2 px-8 py-4 bg-black text-white rounded-full
-             hover:bg-gray-800 transition-all duration-300 hover:scale-105 shadow-lg
-             hover:ring-4 hover:ring-yellow-200 hover:ring-opacity-90 hover:text-yellow-300"
->
+          onClick={onChatClick}
+          className="inline-flex items-center gap-2 px-8 py-4 bg-black text-white rounded-full
+                     hover:bg-gray-800 transition-all duration-300 hover:scale-105 shadow-lg
+                     hover:ring-4 hover:ring-yellow-200 hover:ring-opacity-90 hover:text-yellow-300"
+        >
           <MessageSquare className="w-5 h-5" />
           Chat Now
         </button>

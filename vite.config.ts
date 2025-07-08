@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   build: {
-    chunkSizeWarningLimit: 700,
+    chunkSizeWarningLimit: 1500,
     target: 'esnext',
   },
   optimizeDeps: {
