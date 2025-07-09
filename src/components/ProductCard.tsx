@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import QRCode from 'react-qr-code';
+
 import { fetchMetaData } from '../utils/metaFetcher';
 import type { MetaData } from '../types/chat';
 // import { ArrowRight } from 'lucide-react'; // If you want to use the icon
@@ -53,11 +53,11 @@ export function ProductCard({ url, price }: ProductCardProps) {
 
         {/* QR Code */}
         <div className="flex-shrink-0 mt-4 sm:mt-0"> {/* Added mt-4 on small screens to place QR code below image */}
-          <QRCode
+          {/* <QRCode
             value={url}
             size={100} // Reduced QR code size for better mobile fit
             className="bg-white p-2 rounded-lg shadow-sm"
-          />
+          /> */}
         </div>
 
         {/* Product Details */}
